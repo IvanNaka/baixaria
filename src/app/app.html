@@ -1,0 +1,60 @@
+<header class="topbar">
+  <a class="brand" routerLink="/">🎸 Baixo<span>Estudo</span></a>
+  <nav>
+    <a routerLink="/notas" routerLinkActive="active">Notas</a>
+    <a routerLink="/intervalos" routerLinkActive="active">Intervalos</a>
+    <a routerLink="/mapa" routerLinkActive="active">Mapa</a>
+    <a routerLink="/estatisticas" routerLinkActive="active">Estatísticas</a>
+  </nav>
+  <div class="settings">
+    <select
+      aria-label="Afinação"
+      [value]="settings.settings().tuningId"
+      (change)="settings.update({ tuningId: $any($event.target).value })"
+    >
+      @for (t of tunings; track t.id) {
+        <option [value]="t.id" [selected]="t.id === settings.settings().tuningId">{{ t.label }}</option>
+      }
+    </select>
+    <select
+      aria-label="Notação"
+      [value]="settings.settings().notation"
+      (change)="settings.update({ notation: $any($event.target).value })"
+    >
+      <option value="letters" [selected]="settings.settings().notation === 'letters'">C D E</option>
+      <option value="solfege" [selected]="settings.settings().notation === 'solfege'">Dó Ré Mi</option>
+    </select>
+    <select
+      aria-label="Acidentes"
+      [value]="settings.settings().accidental"
+      (change)="settings.update({ accidental: $any($event.target).value })"
+    >
+      <option value="sharp" [selected]="settings.settings().accidental === 'sharp'">♯</option>
+      <option value="flat" [selected]="settings.settings().accidental === 'flat'">♭</option>
+    </select>
+    <label class="chip" [class.on]="settings.settings().sound" title="Tocar as notas">
+      <input
+        type="checkbox"
+        [checked]="settings.settings().sound"
+        (change)="settings.update({ sound: !settings.settings().sound })"
+      />
+      🔊 Som
+    </label>
+    <label
+      class="chip"
+      [class.on]="settings.settings().octaveUp"
+      title="Toca uma oitava acima — melhor em alto-falantes pequenos"
+    >
+      <input
+        type="checkbox"
+        [checked]="settings.settings().octaveUp"
+        (change)="settings.update({ octaveUp: !settings.settings().octaveUp })"
+      />
+      8va
+    </label>
+  </div>
+</header>
+
+<main>
+  <router-outlet />
+</main>

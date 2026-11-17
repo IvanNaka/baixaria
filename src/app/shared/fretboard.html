@@ -1,0 +1,89 @@
+<div class="scroll" #scroller>
+  <svg
+    [attr.viewBox]="'0 0 ' + width() + ' ' + height()"
+    [style.min-width.px]="width() * 0.8"
+    role="img"
+    aria-label="Braço do contrabaixo"
+    [class.clickable]="clickable()"
+  >
+    <!-- madeira -->
+    <rect
+      class="wood"
+      [attr.x]="nutX"
+      [attr.y]="boardTop"
+      [attr.width]="boardRight() - nutX"
+      [attr.height]="boardBottom() - boardTop"
+      rx="3"
+    />
+
+    @for (dot of inlays(); track $index) {
+      <circle class="inlay" [attr.cx]="dot.x" [attr.cy]="dot.y" r="6" />
+    }
+
+    <!-- trastes -->
+    @for (f of fretNumbers(); track f) {
+      @if (f > 0) {
+        <line
+          class="fret"
+          [attr.x1]="fretLineX(f)"
+          [attr.x2]="fretLineX(f)"
+          [attr.y1]="boardTop"
+          [attr.y2]="boardBottom()"
+        />
+      }
+      <text class="fret-number" [attr.x]="x(f)" [attr.y]="boardBottom() + 19">{{ f }}</text>
+    }
+
+    <!-- pestana -->
+    <rect
+      class="nut"
+      [attr.x]="nutX - 5"
+      [attr.y]="boardTop - 2"
+      width="6"
+      [attr.height]="boardBottom() - boardTop + 4"
+      rx="1"
+    />
+
+    <!-- cordas -->
+    @for (s of strings(); track s.index) {
+      <text class="string-label" [attr.x]="labelW - 10" [attr.y]="s.y + 5">{{ s.label }}</text>
+      <line
+        class="string"
+        [attr.x1]="labelW + 6"
+        [attr.x2]="boardRight()"
+        [attr.y1]="s.y"
+        [attr.y2]="s.y"
+        [attr.stroke-width]="s.thickness"
+      />
+    }
+
+    <!-- células clicáveis / esmaecidas -->
+    @for (c of cells(); track c.string + '-' + c.fret) {
+      <rect
+        class="cell"
+        [class.inactive]="!c.active"
+        [class.hoverable]="clickable() && c.active"
+        [attr.x]="c.x"
+        [attr.y]="c.y"
+        [attr.width]="c.w"
+        [attr.height]="rowH"
+        (click)="onCell(c)"
+      />
+    }
+
+    <!-- marcadores -->
+    @for (m of placedMarkers(); track m.string + '-' + m.fret + '-' + m.kind) {
+      <g [class]="'marker ' + m.kind">
+        <circle
+          [attr.cx]="m.cx"
+          [attr.cy]="m.cy"
+          r="14"
+          [style.fill]="m.color ?? null"
+        />
+        @if (m.label) {
+          <text [attr.x]="m.cx" [attr.y]="m.cy + 4.5">{{ m.label }}</text>
+        }
+      </g>
+    }
+  </svg>
+</div>

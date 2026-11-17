@@ -1,0 +1,123 @@
+:host {
+  display: block;
+}
+
+.scroll {
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  user-select: none;
+}
+
+.wood {
+  fill: var(--wood);
+}
+
+.inlay {
+  fill: var(--inlay);
+}
+
+.fret {
+  stroke: var(--fret);
+  stroke-width: 2.5;
+}
+
+.nut {
+  fill: var(--nut);
+}
+
+.string {
+  stroke: var(--string);
+}
+
+.fret-number,
+.string-label {
+  fill: var(--muted);
+  font-size: 12px;
+  text-anchor: middle;
+  font-weight: 600;
+}
+
+.string-label {
+  text-anchor: end;
+  font-size: 13px;
+  fill: var(--text);
+}
+
+.cell {
+  fill: transparent;
+}
+
+.cell.inactive {
+  fill: var(--dim);
+}
+
+.cell.hoverable {
+  cursor: pointer;
+
+  &:hover {
+    fill: var(--hover);
+  }
+}
+
+.marker {
+  pointer-events: none;
+
+  circle {
+    stroke: rgba(0, 0, 0, 0.35);
+    stroke-width: 1.5;
+  }
+
+  text {
+    fill: #fff;
+    font-size: 11.5px;
+    font-weight: 700;
+    text-anchor: middle;
+  }
+
+  &.root circle {
+    fill: var(--root);
+  }
+  &.target circle {
+    fill: var(--accent);
+  }
+  &.question circle {
+    fill: var(--accent);
+    animation: pulse 1.3s ease-in-out infinite;
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+  &.correct circle {
+    fill: var(--ok);
+  }
+  &.wrong circle {
+    fill: var(--err);
+  }
+  &.hint circle {
+    fill: transparent;
+    stroke: var(--ok);
+    stroke-width: 3;
+    stroke-dasharray: 4 3;
+  }
+  &.hint text {
+    fill: var(--text);
+  }
+  &.note circle {
+    fill: var(--note);
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.15);
+  }
+}

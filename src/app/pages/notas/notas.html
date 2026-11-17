@@ -1,0 +1,110 @@
+<section class="page">
+  <header class="page-head">
+    <h1>Notas no braço</h1>
+    <p class="muted">Memorize onde cada nota fica. As notas que você mais erra aparecem com mais frequência.</p>
+  </header>
+
+  <div class="tabs" role="tablist">
+    @for (m of modes; track m.id) {
+      <button
+        type="button"
+        role="tab"
+        [class.active]="mode() === m.id"
+        [attr.aria-selected]="mode() === m.id"
+        (click)="setMode(m.id)"
+      >
+        {{ m.label }}
+      </button>
+    }
+  </div>
+
+  <div class="card options">
+    <app-range-picker [range]="range()" (rangeChange)="setRange($event)" />
+    <label class="chip" [class.on]="naturalsOnly()">
+      <input type="checkbox" [checked]="naturalsOnly()" (change)="toggleNaturals()" />
+      Só notas naturais
+    </label>
+  </div>
+
+  <div class="card exercise">
+    @if (question(); as q) {
+      <div class="prompt">
+        @switch (mode()) {
+          @case ('identify') {
+            Qual é a nota marcada?
+          }
+          @case ('find') {
+            Encontre <strong class="big">{{ settings.name(q.pc) }}</strong> na corda
+            <strong class="big">{{ settings.stringName(q.position.string) }}</strong>
+          }
+          @case ('all') {
+            Encontre todas as notas <strong class="big">{{ settings.name(q.pc) }}</strong>
+            <span class="muted">({{ foundCount() }} de {{ q.targets.length }})</span>
+          }
+        }
+      </div>
+
+      <app-fretboard
+        [tuning]="settings.tuning()"
+        [frets]="boardFrets()"
+        [range]="range()"
+        [markers]="markers()"
+        [clickable]="mode() !== 'identify' && status() === 'pending'"
+        (positionClick)="onPosition($event)"
+      />
+
+      @if (mode() === 'identify') {
+        <div class="answers">
+          @for (b of answerButtons(); track b.pc) {
+            <button
+              type="button"
+              class="answer"
+              [class.ok]="status() !== 'pending' && b.pc === q.pc"
+              [class.bad]="status() === 'wrong' && b.pc === picked()"
+              [disabled]="status() !== 'pending'"
+              (click)="answer(b.pc)"
+            >
+              {{ b.label }}
+            </button>
+          }
+        </div>
+      }
+
+      <div class="feedback">
+        @switch (status()) {
+          @case ('correct') {
+            <span class="ok-text">Certo! {{ settings.name(q.pc) }}</span>
+          }
+          @case ('wrong') {
+            <span class="err-text">
+              Era {{ settings.name(q.pc) }}
+              @if (mode() !== 'identify') {
+                — as posições corretas estão tracejadas
+              }
+            </span>
+            <button type="button" class="primary" (click)="next()">Próxima (Enter)</button>
+          }
+          @default {
+            @if (mode() !== 'identify') {
+              <button type="button" class="link" (click)="giveUp()">Mostrar resposta</button>
+            }
+          }
+        }
+      </div>
+    } @else {
+      <p class="muted">Nenhuma posição disponível com esses filtros. Amplie a faixa de casas.</p>
+    }
+
+    <app-score-bar [score]="score" />
+  </div>
+
+  <aside class="card tips">
+    <h2>Dicas de estudo</h2>
+    <ul>
+      <li>Comece só com as notas naturais nas casas 0–5 e vá ampliando a faixa.</li>
+      <li>Use as referências: casa 5 = próxima corda solta; casa 12 = mesma nota da corda solta, uma oitava acima.</li>
+      <li>Oitava: duas cordas acima e duas casas à frente.</li>
+      <li>Entre Mi–Fá e Si–Dó há apenas um semitom (uma casa).</li>
+    </ul>
+  </aside>
+</section>

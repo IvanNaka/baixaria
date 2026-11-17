@@ -1,0 +1,159 @@
+<section class="page">
+  <header class="page-head">
+    <h1>Intervalos</h1>
+    <p class="muted">
+      Aprenda o desenho (a "forma") de cada intervalo no braço e reconheça-o pelo som.
+      <strong>R</strong> marca a tônica (nota de referência).
+    </p>
+  </header>
+
+  <div class="tabs" role="tablist">
+    @for (m of modes; track m.id) {
+      <button
+        type="button"
+        role="tab"
+        [class.active]="mode() === m.id"
+        [attr.aria-selected]="mode() === m.id"
+        (click)="setMode(m.id)"
+      >
+        {{ m.label }}
+      </button>
+    }
+  </div>
+
+  <div class="card options">
+    <div class="row">
+      <span class="label">Intervalos:</span>
+      @for (iv of allIntervals; track iv.semitones) {
+        <label class="chip" [class.on]="enabled().includes(iv.semitones)" [title]="iv.name">
+          <input
+            type="checkbox"
+            [checked]="enabled().includes(iv.semitones)"
+            (change)="toggleInterval(iv.semitones)"
+          />
+          {{ iv.short }}
+        </label>
+      }
+    </div>
+    <div class="row">
+      <span class="label">Pré-seleções:</span>
+      @for (p of presets; track p.label) {
+        <button type="button" class="small" (click)="applyPreset(p.semitones)">{{ p.label }}</button>
+      }
+    </div>
+    <div class="row">
+      <label>
+        Direção
+        <select [value]="direction()" (change)="setDirection($any($event.target).value)">
+          <option value="up">Ascendente</option>
+          <option value="down">Descendente</option>
+          <option value="both">Ambas</option>
+        </select>
+      </label>
+      @if (mode() !== 'ear') {
+        <label class="chip" [class.on]="nearShapes()">
+          <input type="checkbox" [checked]="nearShapes()" (change)="toggleNear()" />
+          Formas próximas (até 4 casas)
+        </label>
+      } @else {
+        <label class="chip" [class.on]="harmonic()">
+          <input type="checkbox" [checked]="harmonic()" (change)="toggleHarmonic()" />
+          Notas simultâneas (harmônico)
+        </label>
+      }
+    </div>
+    <app-range-picker [range]="range()" (rangeChange)="setRange($event)" />
+  </div>
+
+  <div class="card exercise">
+    @if (question(); as q) {
+      <div class="prompt">
+        @switch (mode()) {
+          @case ('identify') {
+            Qual é o intervalo entre <strong>R</strong> e <strong>?</strong>
+          }
+          @case ('find') {
+            Toque a <strong class="big">{{ currentInterval()!.short }}</strong>
+            <span class="muted">({{ currentInterval()!.name }})</span>
+            {{ q.semitones > 0 ? 'acima' : 'abaixo' }} de
+            <strong>{{ settings.name(q.rootMidi) }}</strong>
+          }
+          @case ('ear') {
+            Que intervalo você ouviu?
+            <button type="button" class="small" (click)="replay()">🔊 Ouvir de novo (R)</button>
+            <button type="button" class="small" (click)="playRoot()">Só a tônica</button>
+          }
+        }
+      </div>
+
+      <app-fretboard
+        [tuning]="settings.tuning()"
+        [frets]="boardFrets()"
+        [range]="range()"
+        [markers]="markers()"
+        [clickable]="mode() === 'find' && status() === 'pending'"
+        (positionClick)="onPosition($event)"
+      />
+
+      @if (mode() !== 'find') {
+        <div class="answers">
+          @for (iv of answerButtons(); track iv.semitones) {
+            <button
+              type="button"
+              class="answer wide"
+              [class.ok]="status() !== 'pending' && iv.semitones === currentInterval()!.semitones"
+              [class.bad]="status() === 'wrong' && iv.semitones === picked()"
+              [disabled]="status() !== 'pending'"
+              (click)="answer(iv.semitones)"
+            >
+              <span class="short">{{ iv.short }}</span>
+              <span class="name">{{ iv.name }}</span>
+            </button>
+          }
+        </div>
+      }
+
+      <div class="feedback">
+        @switch (status()) {
+          @case ('correct') {
+            <span class="ok-text">
+              Certo! {{ currentInterval()!.name }}
+              ({{ settings.name(q.rootMidi) }} → {{ settings.name(q.rootMidi + q.semitones) }})
+            </span>
+          }
+          @case ('wrong') {
+            <span class="err-text">
+              Era {{ currentInterval()!.name }}
+              ({{ settings.name(q.rootMidi) }} → {{ settings.name(q.rootMidi + q.semitones) }})
+            </span>
+            <button type="button" class="small" (click)="replay()">🔊 Ouvir</button>
+            <button type="button" class="primary" (click)="next()">Próxima (Enter)</button>
+          }
+          @default {
+            @if (mode() === 'find') {
+              <button type="button" class="link" (click)="giveUp()">Mostrar resposta</button>
+            }
+          }
+        }
+      </div>
+    } @else {
+      <p class="muted">
+        Nenhum intervalo selecionado cabe nessa faixa do braço. Amplie a faixa de casas ou desmarque
+        "formas próximas".
+      </p>
+    }
+
+    <app-score-bar [score]="score" />
+  </div>
+
+  <aside class="card tips">
+    <h2>Formas para lembrar (afinação em quartas)</h2>
+    <ul>
+      <li><strong>4J</strong>: mesma casa, uma corda acima.</li>
+      <li><strong>5J</strong>: uma corda acima, duas casas à frente.</li>
+      <li><strong>8J</strong>: duas cordas acima, duas casas à frente.</li>
+      <li><strong>3M</strong>: uma corda acima, uma casa atrás. <strong>3m</strong>: uma corda acima, duas casas atrás.</li>
+      <li><strong>7m</strong>: duas cordas acima, mesma casa.</li>
+    </ul>
+  </aside>
+</section>
