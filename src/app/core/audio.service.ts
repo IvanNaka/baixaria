@@ -7,6 +7,13 @@ import { SettingsService } from './settings.service';
 export class AudioService {
   private readonly settings = inject(SettingsService);
   private ctx?: AudioContext;
+  /** Até quando (performance.now) há som da própria app saindo nos alto-falantes. */
+  private busyUntil = 0;
+
+  /** True enquanto a app está tocando (o microfone deve ignorar esse período). */
+  isPlaying(): boolean {
+    return performance.now() < this.busyUntil;
+  }
 
   private context(): AudioContext | undefined {
     if (typeof AudioContext === 'undefined') return undefined;
@@ -21,6 +28,11 @@ export class AudioService {
     if (!s.sound && !opts.force) return;
     const ctx = this.context();
     if (!ctx) return;
+
+    this.busyUntil = Math.max(
+      this.busyUntil,
+      performance.now() + ((opts.delay ?? 0) + (opts.duration ?? 1.4)) * 1000 + 150,
+    );
 
     const pitch = midi + (s.octaveUp ? 12 : 0);
     const freq = midiToFrequency(pitch);

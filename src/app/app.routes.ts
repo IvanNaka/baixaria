@@ -8,6 +8,11 @@ export const routes: Routes = [
     title: 'Intervalos',
     loadComponent: () => import('./pages/intervalos/intervalos').then((m) => m.Intervalos),
   },
+  {
+    path: 'microfone',
+    title: 'Tocar no baixo',
+    loadComponent: () => import('./pages/microfone/microfone').then((m) => m.Microfone),
+  },
   { path: 'mapa', title: 'Mapa do braço', loadComponent: () => import('./pages/mapa/mapa').then((m) => m.Mapa) },
   {
     path: 'estatisticas',

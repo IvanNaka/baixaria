@@ -311,3 +311,11 @@ button {
     color: var(--text);
   }
 }
+
+app-toque-nota,
+app-intervalos-tocados,
+app-desafio {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}

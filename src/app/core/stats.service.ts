@@ -16,6 +16,9 @@ export const STAT_KEYS = {
   notePosition: 'notas:posicao',
   intervalVisual: 'intervalos:visual',
   intervalEar: 'intervalos:ouvido',
+  micNote: 'microfone:nota',
+  micString: 'microfone:corda',
+  micInterval: 'microfone:intervalo',
 } as const;
 
 const KEY = 'baixo-estudo:stats';
