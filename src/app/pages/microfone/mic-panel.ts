@@ -2,24 +2,47 @@ import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/c
 import { MicrophoneService } from '../../core/microphone.service';
 import { SettingsService } from '../../core/settings.service';
 
-const MIN_DB = -60;
+const MIN_DB = -70;
 
 @Component({
   selector: 'app-mic-panel',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="card panel">
-      @if (!mic.listening()) {
-        <div class="off">
+      <div class="device-row">
+        <label class="device">
+          <span class="label">Entrada de áudio</span>
+          <select
+            aria-label="Entrada de áudio"
+            [value]="mic.prefs().deviceId"
+            (change)="mic.updatePrefs({ deviceId: $any($event.target).value })"
+          >
+            <option value="" [selected]="!mic.prefs().deviceId">Padrão do sistema</option>
+            @for (d of mic.devices(); track d.id) {
+              @if (d.id !== 'default') {
+                <option [value]="d.id" [selected]="d.id === mic.prefs().deviceId">{{ d.label }}</option>
+              }
+            }
+          </select>
+        </label>
+        <button type="button" class="small" title="Atualizar lista de entradas" (click)="mic.refreshDevices()">
+          ↻ Atualizar lista
+        </button>
+        @if (!mic.listening()) {
           <button type="button" class="primary big" [disabled]="mic.starting()" (click)="mic.start()">
             🎤 {{ mic.starting() ? 'Ativando…' : 'Ativar microfone' }}
           </button>
-          <p class="muted">
-            Toque no seu baixo e a app reconhece a nota. Funciona melhor com cabo numa interface de
-            áudio ou com o microfone perto do amplificador. Em ambiente silencioso, o microfone do
-            celular ou notebook também serve.
-          </p>
-        </div>
+        } @else {
+          <button type="button" (click)="mic.stop()">Desativar</button>
+        }
+      </div>
+
+      @if (!mic.listening()) {
+        <p class="muted">
+          Escolha a entrada (microfone ou interface de áudio) e clique em <strong>Ativar</strong>. Os
+          nomes dos dispositivos aparecem depois que o navegador recebe a permissão. Funciona melhor
+          com cabo numa interface de áudio ou com o microfone perto do amplificador.
+        </p>
       } @else {
         <div class="on">
           <div class="note" [class.fresh]="mic.reading() !== null">
@@ -28,7 +51,12 @@ const MIN_DB = -60;
           </div>
 
           <div class="meter-wrap">
-            <span class="label">Volume</span>
+            <span class="label">
+              Volume
+              @if (mic.activeDevice(); as dev) {
+                · {{ dev }}
+              }
+            </span>
             <div class="meter" title="A linha marca o volume mínimo para reconhecer uma nota">
               <span class="fill" [style.width.%]="mic.level() * 100"></span>
               <span class="threshold" [style.left.%]="thresholdPct()"></span>
@@ -38,7 +66,7 @@ const MIN_DB = -60;
               <input
                 type="range"
                 min="20"
-                max="55"
+                max="65"
                 step="1"
                 [value]="-thresholdDb()"
                 (input)="setThreshold(-$any($event.target).valueAsNumber)"
@@ -46,34 +74,36 @@ const MIN_DB = -60;
             </label>
           </div>
 
-          <div class="controls">
-            @if (mic.devices().length > 1) {
-              <select
-                aria-label="Entrada de áudio"
-                [value]="mic.prefs().deviceId"
-                (change)="mic.updatePrefs({ deviceId: $any($event.target).value })"
-              >
-                <option value="">Entrada padrão</option>
-                @for (d of mic.devices(); track d.id) {
-                  <option [value]="d.id" [selected]="d.id === mic.prefs().deviceId">{{ d.label }}</option>
-                }
-              </select>
-            }
-            <label
-              class="chip"
-              [class.on]="mic.prefs().exactOctave"
-              title="Desligado: aceita a nota certa em qualquer oitava. Microfones pequenos às vezes confundem a oitava dos graves."
-            >
-              <input
-                type="checkbox"
-                [checked]="mic.prefs().exactOctave"
-                (change)="mic.updatePrefs({ exactOctave: !mic.prefs().exactOctave })"
-              />
-              Exigir oitava exata
-            </label>
-            <button type="button" (click)="mic.stop()">Desativar</button>
-          </div>
+          <label
+            class="chip"
+            [class.on]="mic.prefs().exactOctave"
+            title="Desligado: aceita a nota certa em qualquer oitava. Microfones pequenos às vezes confundem a oitava dos graves."
+          >
+            <input
+              type="checkbox"
+              [checked]="mic.prefs().exactOctave"
+              (change)="mic.updatePrefs({ exactOctave: !mic.prefs().exactOctave })"
+            />
+            Exigir oitava exata
+          </label>
         </div>
+
+        <p class="diag muted" title="Informações para ajustar a sensibilidade">
+          Sinal {{ diag().db }} dB (mínimo {{ thresholdDb().toFixed(0) }} dB) ·
+          {{ diag().pitch }}
+          @if (diag().belowThreshold) {
+            · <span class="warn-text">abaixo da sensibilidade — aumente o ganho ou a sensibilidade</span>
+          }
+        </p>
+      }
+
+      @if (mic.warning(); as w) {
+        <p class="warn-text">
+          ⚠ {{ w }}
+          @if (w.includes('Retomar')) {
+            <button type="button" class="small" (click)="mic.resume()">Retomar áudio</button>
+          }
+        </p>
       }
       @if (mic.error(); as err) {
         <p class="err-text">{{ err }}</p>
@@ -86,15 +116,32 @@ const MIN_DB = -60;
       flex-direction: column;
       gap: 10px;
     }
-    .off {
+    p {
+      margin: 0;
+    }
+    .device-row {
       display: flex;
       flex-wrap: wrap;
-      gap: 12px 20px;
-      align-items: center;
+      gap: 8px 12px;
+      align-items: flex-end;
     }
-    .off p {
-      margin: 0;
-      flex: 1 1 300px;
+    .device {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 2px;
+      flex: 0 1 340px;
+      min-width: 0;
+    }
+    .device select {
+      width: 100%;
+    }
+    .diag {
+      font-size: 0.8rem;
+      font-variant-numeric: tabular-nums;
+    }
+    .warn-text {
+      color: #f2b84b;
     }
     .big {
       font-size: 1.1rem;
@@ -148,12 +195,6 @@ const MIN_DB = -60;
       font-size: 0.82rem;
       color: var(--muted);
     }
-    .controls {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      align-items: center;
-    }
   `,
 })
 export class MicPanel {
@@ -168,6 +209,19 @@ export class MicPanel {
     if (r) return this.settings.name(r.midi) + Math.floor(r.midi / 12 - 1);
     const last = this.mic.lastNote();
     return last === null ? '—' : this.settings.name(last) + Math.floor(last / 12 - 1);
+  });
+
+  protected readonly diag = computed(() => {
+    const d = this.mic.diagnostics();
+    const db = Number.isFinite(d.db) ? Math.round(d.db) : -99;
+    return {
+      db,
+      belowThreshold: db > -99 && db < this.thresholdDb() && db > this.thresholdDb() - 15,
+      pitch:
+        d.freq === null
+          ? 'sem altura definida'
+          : `${d.freq.toFixed(1)} Hz (confiança ${Math.round(d.clarity * 100)}%)`,
+    };
   });
 
   protected setThreshold(db: number): void {

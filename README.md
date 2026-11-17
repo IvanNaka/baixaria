@@ -29,7 +29,19 @@ Dicas: use uma interface de áudio com cabo ou deixe o microfone perto do amplif
 *sensibilidade* para que a linha do medidor fique acima do ruído ambiente. Por padrão a nota é
 aceita em qualquer oitava (microfones pequenos às vezes confundem a oitava dos graves); ligue
 *Exigir oitava exata* para treinar a posição exata. A app não tem como saber em qual corda você
-tocou — só a altura da nota. O microfone exige `https://` ou `http://localhost`.
+tocou — só a altura da nota.
+
+**Se o microfone não for reconhecido:**
+- O navegador só libera o microfone em `http://localhost` ou `https://`. Para abrir em outro
+  aparelho da rede (ex.: celular), rode `npm run start:rede` e acesse `https://<ip-do-computador>:4200`
+  (aceite o aviso de certificado).
+- Escolha a entrada correta na lista *Entrada de áudio* (os nomes aparecem após a permissão; use
+  *↻ Atualizar lista* depois de conectar uma interface).
+- Confira a permissão do site e a do sistema operacional (Windows: Privacidade › Microfone; macOS:
+  Privacidade e Segurança › Microfone) e se outro programa (DAW, driver ASIO) não está usando a
+  entrada em modo exclusivo.
+- A linha de diagnóstico abaixo do medidor mostra o volume em dB e a frequência detectada: se o
+  sinal estiver abaixo do mínimo, aumente o ganho da interface ou a sensibilidade.
 
 **Mapa do braço** (`/mapa`) — todas as notas ou todos os intervalos a partir de uma tônica; clique para ouvir.
 
