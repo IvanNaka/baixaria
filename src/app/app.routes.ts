@@ -3,6 +3,7 @@ import { Routes } from '@angular/router';
 export const routes: Routes = [
   { path: '', title: 'Baixaria', loadComponent: () => import('./pages/inicio/inicio').then((m) => m.Inicio) },
   { path: 'notas', title: 'Notas no braço', loadComponent: () => import('./pages/notas/notas').then((m) => m.Notas) },
+  { path: 'cifras', title: 'Cifras', loadComponent: () => import('./pages/cifras/cifras').then((m) => m.Cifras) },
   {
     path: 'intervalos',
     title: 'Intervalos',

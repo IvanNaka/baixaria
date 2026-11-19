@@ -1,0 +1,127 @@
+<section class="page">
+  <header class="page-head">
+    <h1>Cifras</h1>
+    <p class="muted">
+      Associe a cifra (C D E F G A B) aos nomes Dó Ré Mi Fá Sol Lá Si, nos dois sentidos.
+    </p>
+  </header>
+
+  <div class="tabs" role="tablist">
+    @for (m of modes; track m.id) {
+      <button
+        type="button"
+        role="tab"
+        [class.active]="mode() === m.id"
+        [attr.aria-selected]="mode() === m.id"
+        (click)="setMode(m.id)"
+      >
+        {{ m.label }}
+      </button>
+    }
+  </div>
+
+  <div class="card options">
+    <div class="row">
+      <label>
+        Notas
+        <select [value]="pool()" (change)="setPool($any($event.target).value)">
+          @for (p of pools; track p.id) {
+            <option [value]="p.id" [selected]="p.id === pool()">{{ p.label }}</option>
+          }
+        </select>
+      </label>
+      <label class="chip" [class.on]="showTable()">
+        <input type="checkbox" [checked]="showTable()" (change)="showTable.set(!showTable())" />
+        Mostrar tabela de referência
+      </label>
+    </div>
+    @if (showTable()) {
+      <div class="ref-table" role="table" aria-label="Tabela de referência">
+        @for (r of table(); track r.letters) {
+          <div class="pair" role="row">
+            <span role="cell" class="letters">{{ r.letters }}</span>
+            <span role="cell" class="solfege">{{ r.solfege }}</span>
+          </div>
+        }
+      </div>
+    }
+  </div>
+
+  <div class="card exercise">
+    @if (question(); as q) {
+      <div class="question">
+        <span class="muted">
+          {{ q.from === 'letters' ? 'Qual é o nome desta cifra?' : 'Qual é a cifra desta nota?' }}
+        </span>
+        <div class="big-name" [class.ok]="status() === 'correct'" [class.bad]="status() === 'wrong'">
+          {{ name(q.item, q.from) }}
+        </div>
+      </div>
+
+      <div class="answers names">
+        @for (a of answers(); track a.label) {
+          <button
+            type="button"
+            class="answer"
+            [class.ok]="status() !== 'pending' && a.item.pc === q.item.pc && a.label === name(q.item, answerNotation())"
+            [class.bad]="status() === 'wrong' && picked()?.pc === a.item.pc && picked()?.acc === a.item.acc"
+            [disabled]="status() !== 'pending'"
+            (click)="answer(a.item)"
+          >
+            {{ a.label }}
+          </button>
+        }
+      </div>
+
+      <div class="feedback">
+        @switch (status()) {
+          @case ('correct') {
+            <span class="ok-text">
+              Certo! {{ name(q.item, 'letters') }} = {{ name(q.item, 'solfege') }}
+              @if (lastTime() !== null) {
+                <span class="muted">({{ lastTime()!.toFixed(1) }}s)</span>
+              }
+            </span>
+          }
+          @case ('wrong') {
+            <span class="err-text">
+              {{ name(q.item, 'letters') }} = {{ name(q.item, 'solfege') }}
+              @if (enharmonicMiss()) {
+                — {{ name(picked()!, answerNotation()) }} soa igual, mas o nome desta nota é
+                {{ name(q.item, answerNotation()) }}
+              }
+            </span>
+            <button type="button" class="primary" (click)="next()">Próxima (Enter)</button>
+          }
+          @default {
+            @if (answerNotation() === 'letters') {
+              <span class="muted small">
+                Dica: dá para responder pelo teclado
+                @if (pool() !== 'naturals') {
+                  (letra e, se precisar, # ou b logo em seguida)
+                }
+                @if (pendingLetter(); as l) {
+                  — <strong>{{ l }}</strong>…
+                }
+              </span>
+            }
+          }
+        }
+      </div>
+    }
+    <app-score-bar [score]="score" />
+  </div>
+
+  <aside class="card tips">
+    <h2>Como lembrar</h2>
+    <ul>
+      <li>A cifra começa no Lá: <strong>A B C D E F G</strong> = <strong>Lá Si Dó Ré Mi Fá Sol</strong>.</li>
+      <li><strong>C = Dó</strong>: daí em diante segue a ordem: D = Ré, E = Mi, F = Fá, G = Sol.</li>
+      <li>As cordas soltas do baixo de 4 cordas são <strong>E A D G</strong> = Mi Lá Ré Sol.</li>
+      <li>
+        O acidente não muda: <strong>C# = Dó#</strong>, <strong>B♭ = Si♭</strong>. Notas como Dó#
+        e Ré♭ soam igual, mas têm nomes diferentes.
+      </li>
+    </ul>
+  </aside>
+</section>

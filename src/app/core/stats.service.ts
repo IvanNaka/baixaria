@@ -14,6 +14,8 @@ export type StatsData = Record<string, Record<string, ItemStats>>;
 export const STAT_KEYS = {
   notePc: 'notas:classe',
   notePosition: 'notas:posicao',
+  namesToSolfege: 'cifras:para-solfejo',
+  namesToLetters: 'cifras:para-cifra',
   intervalVisual: 'intervalos:visual',
   intervalEar: 'intervalos:ouvido',
 } as const;
