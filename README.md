@@ -15,13 +15,13 @@ Aplicação web (Angular 20) para estudo de contrabaixo.
 - *Treino de ouvido* — ouça duas notas (melódico ou harmônico) e identifique o intervalo.
 - Seleção de intervalos (2m a 8J), direção ascendente/descendente e opção de "formas próximas".
 
-**Mapa do braço** (`/mapa`)
-- *Notas* — todas as notas do braço, com destaque de uma nota; clique para ouvir.
-- *Intervalos* (`/mapa?ver=intervalos`) — clique numa casa para definir a tônica e veja cada
-  intervalo com uma cor. Filtre intervalos ou use atalhos (tríades, acordes com sétima,
-  pentatônicas, escalas maior e menor); rótulos em graus (3M, 5J) ou distância real (10M, ↓4J);
-  modo "região da mão" (±4 casas); tabela de formas mostrando onde cada intervalo fica na mesma
-  corda e nas cordas de cima.
+**Mapa do braço** (`/mapa`) — todas as notas ou todos os intervalos a partir de uma tônica; clique para ouvir.
+
+**Mapa de intervalos** (`/mapa?ver=intervalos`) — clique numa casa para definir a tônica e veja
+cada intervalo com uma cor. Filtre intervalos ou use atalhos (tríades, acordes com sétima,
+pentatônicas, escalas maior e menor); rótulos em graus (3M, 5J) ou distância real (10M, ↓4J);
+modo "região da mão" (±4 casas); tabela de formas mostrando onde cada intervalo fica na mesma
+corda e nas cordas de cima.
 
 **Estatísticas** (`/estatisticas`) — precisão por nota, por posição (mapa de calor) e por intervalo.
 
