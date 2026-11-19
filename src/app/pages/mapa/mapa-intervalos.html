@@ -1,0 +1,119 @@
+<div class="card options">
+  <div class="row">
+    <span class="label">Mostrar:</span>
+    @for (iv of intervals; track iv.semitones) {
+      <button
+        type="button"
+        class="iv-chip"
+        [class.on]="isOn(iv.semitones)"
+        [style.--c]="colors[iv.semitones]"
+        [title]="iv.name"
+        [attr.aria-pressed]="isOn(iv.semitones)"
+        (click)="toggle(iv.semitones)"
+      >
+        {{ iv.short }}
+      </button>
+    }
+  </div>
+  <div class="row">
+    <span class="label">Atalhos:</span>
+    @for (p of presets; track p.label) {
+      <button type="button" class="small" (click)="applyPreset(p.semitones)">{{ p.label }}</button>
+    }
+  </div>
+  <div class="row">
+    <label>
+      Rótulos
+      <select [value]="labelMode()" (change)="labelMode.set($any($event.target).value)">
+        <option value="degree">Graus (3M, 5J…)</option>
+        <option value="real">Distância real (10M, ↓4J…)</option>
+      </select>
+    </label>
+    <label>
+      Clique no braço
+      <select [value]="clickAction()" (change)="clickAction.set($any($event.target).value)">
+        <option value="root">define a tônica</option>
+        <option value="play">toca o intervalo</option>
+      </select>
+    </label>
+    <label>
+      Casas
+      <select [value]="frets()" (change)="frets.set(+$any($event.target).value)">
+        @for (f of [12, 15, 17, 24]; track f) {
+          <option [value]="f" [selected]="f === frets()">0–{{ f }}</option>
+        }
+      </select>
+    </label>
+    <label class="chip" [class.on]="handRegion()">
+      <input type="checkbox" [checked]="handRegion()" (change)="handRegion.set(!handRegion())" />
+      Só a região da mão (±4 casas)
+    </label>
+  </div>
+</div>
+
+<div class="card board">
+  <p class="root-info">
+    Tônica: <strong class="root-name">{{ rootInfo().name }}</strong>
+    <span class="muted">corda {{ rootInfo().string }}, casa {{ rootInfo().fret }}</span>
+    <span class="muted hint">
+      — {{ clickAction() === 'root' ? 'clique em qualquer casa para mudar a tônica' : 'clique para ouvir o intervalo' }}
+    </span>
+  </p>
+  <app-fretboard
+    [tuning]="settings.tuning()"
+    [frets]="frets()"
+    [range]="range()"
+    [markers]="markers()"
+    [clickable]="true"
+    (positionClick)="onPosition($event)"
+  />
+</div>
+
+<div class="card">
+  <h2>Formas a partir da tônica</h2>
+  <p class="muted intro">
+    Onde cada intervalo fica, saindo da tônica na mesma corda ou nas cordas mais agudas. Passe o
+    mouse (ou toque) numa linha para destacar só aquele intervalo no braço; clique para ouvir.
+    @if (hasDropTuning()) {
+      <br />Atenção: a afinação atual não é toda em quartas; as formas valem entre as cordas
+      afinadas em quartas.
+    }
+  </p>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Intervalo</th>
+          <th class="num">Semitons</th>
+          <th>Nota</th>
+          <th>Mesma corda</th>
+          <th>1 corda acima</th>
+          <th>2 cordas acima</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (s of shapes(); track s.semitones) {
+          <tr
+            tabindex="0"
+            [class.focused]="focused() === s.semitones"
+            (mouseenter)="focused.set(s.semitones % 12 || null)"
+            (mouseleave)="focused.set(null)"
+            (focus)="focused.set(s.semitones % 12 || null)"
+            (blur)="focused.set(null)"
+            (click)="playShape(s.semitones)"
+          >
+            <th>
+              <span class="dot" [style.background]="colors[s.semitones % 12]"></span>
+              <strong>{{ s.short }}</strong>{{ ' ' }}<span class="muted">{{ s.name }}</span>
+            </th>
+            <td class="num">{{ s.semitones }}</td>
+            <td>{{ s.note }}</td>
+            @for (c of s.cells; track $index) {
+              <td [class.muted]="c === '—'">{{ c }}</td>
+            }
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

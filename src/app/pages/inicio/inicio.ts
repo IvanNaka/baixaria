@@ -29,6 +29,10 @@ import { RouterLink } from '@angular/router';
           <h2>Mapa do braço</h2>
           <p>Consulte todas as notas ou os intervalos a partir de qualquer tônica. Clique para ouvir.</p>
         </a>
+        <a class="card link-card" routerLink="/mapa" [queryParams]="{ ver: 'intervalos' }">
+          <h2>Mapa de intervalos</h2>
+          <p>Escolha uma tônica no braço e veja onde ficam terças, quintas, arpejos e escalas, com cores e formas.</p>
+        </a>
         <a class="card link-card" routerLink="/estatisticas">
           <h2>Estatísticas</h2>
           <p>Veja sua precisão por nota, posição e intervalo, e descubra seus pontos fracos.</p>

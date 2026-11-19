@@ -45,6 +45,12 @@ tocou — só a altura da nota.
 
 **Mapa do braço** (`/mapa`) — todas as notas ou todos os intervalos a partir de uma tônica; clique para ouvir.
 
+**Mapa de intervalos** (`/mapa?ver=intervalos`) — clique numa casa para definir a tônica e veja
+cada intervalo com uma cor. Filtre intervalos ou use atalhos (tríades, acordes com sétima,
+pentatônicas, escalas maior e menor); rótulos em graus (3M, 5J) ou distância real (10M, ↓4J);
+modo "região da mão" (±4 casas); tabela de formas mostrando onde cada intervalo fica na mesma
+corda e nas cordas de cima.
+
 **Estatísticas** (`/estatisticas`) — precisão por nota, por posição (mapa de calor) e por intervalo.
 
 Em todos os exercícios é possível limitar a faixa de casas e as cordas. O sorteio é **adaptativo**:
