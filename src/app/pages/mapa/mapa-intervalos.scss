@@ -1,0 +1,92 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.iv-chip {
+  min-width: 44px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 2px solid var(--c);
+  background: transparent;
+  font-size: 0.88rem;
+  font-weight: 600;
+
+  &.on {
+    background: var(--c);
+    color: #fff;
+  }
+}
+
+.root-info {
+  margin: 0 0 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: baseline;
+}
+
+.root-name {
+  font-size: 1.4rem;
+  color: var(--root);
+}
+
+.hint {
+  font-size: 0.85rem;
+}
+
+.intro {
+  margin: 0 0 10px;
+  font-size: 0.9rem;
+}
+
+.table-wrap {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+th,
+td {
+  padding: 6px 8px;
+  text-align: left;
+  white-space: nowrap;
+  border-bottom: 1px solid var(--border);
+}
+
+thead th {
+  color: var(--muted);
+  font-weight: 500;
+  font-size: 0.8rem;
+}
+
+tbody tr {
+  cursor: pointer;
+
+  &:hover,
+  &.focused {
+    background: var(--surface-2);
+  }
+}
+
+tbody th {
+  font-weight: 400;
+}
+
+.num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 6px;
+}
