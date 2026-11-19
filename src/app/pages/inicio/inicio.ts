@@ -21,6 +21,10 @@ import { RouterLink } from '@angular/router';
           <h2>Intervalos</h2>
           <p>Reconheça as formas dos intervalos no braço, toque-os a partir de uma tônica e treine o ouvido.</p>
         </a>
+        <a class="card link-card" routerLink="/microfone">
+          <h2>🎤 Tocar no baixo</h2>
+          <p>Responda tocando o instrumento: afinador, toque a nota, intervalos e desafios cronometrados.</p>
+        </a>
         <a class="card link-card" routerLink="/mapa">
           <h2>Mapa do braço</h2>
           <p>Consulte todas as notas ou os intervalos a partir de qualquer tônica. Clique para ouvir.</p>

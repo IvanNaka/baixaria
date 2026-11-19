@@ -28,6 +28,9 @@
             ],
             "styles": [
               "src/styles.scss"
+            ],
+            "allowedCommonJsDependencies": [
+              "fft.js"
             ]
           },
           "configurations": {
@@ -87,5 +90,8 @@
         }
       }
     }
+  },
+  "cli": {
+    "analytics": "60360013-e9d3-41a7-9399-7b0c1951fc4f"
   }
 }

@@ -15,6 +15,34 @@ Aplicação web (Angular 20) para estudo de contrabaixo.
 - *Treino de ouvido* — ouça duas notas (melódico ou harmônico) e identifique o intervalo.
 - Seleção de intervalos (2m a 8J), direção ascendente/descendente e opção de "formas próximas".
 
+**Tocar no baixo — com microfone** (`/microfone`)
+
+Você responde tocando o instrumento; a app reconhece a nota pelo microfone.
+- *Afinador* — nota, frequência, desvio em cents e indicação da corda.
+- *Toque a nota* — a app pede uma nota (ex.: F#) e você toca em qualquer lugar do braço.
+- *Toque na corda* — toque a nota pedida na corda indicada, dentro da faixa de casas escolhida.
+- *Intervalos* — a app toca e marca a tônica; você toca o intervalo pedido.
+- *Desafio cronometrado* — notas naturais ou cromática numa corda, ciclo de quartas ou escala
+  maior, contra o relógio, com recorde salvo.
+
+Dicas: use uma interface de áudio com cabo ou deixe o microfone perto do amplificador; ajuste a
+*sensibilidade* para que a linha do medidor fique acima do ruído ambiente. Por padrão a nota é
+aceita em qualquer oitava (microfones pequenos às vezes confundem a oitava dos graves); ligue
+*Exigir oitava exata* para treinar a posição exata. A app não tem como saber em qual corda você
+tocou — só a altura da nota.
+
+**Se o microfone não for reconhecido:**
+- O navegador só libera o microfone em `http://localhost` ou `https://`. Para abrir em outro
+  aparelho da rede (ex.: celular), rode `npm run start:rede` e acesse `https://<ip-do-computador>:4200`
+  (aceite o aviso de certificado).
+- Escolha a entrada correta na lista *Entrada de áudio* (os nomes aparecem após a permissão; use
+  *↻ Atualizar lista* depois de conectar uma interface).
+- Confira a permissão do site e a do sistema operacional (Windows: Privacidade › Microfone; macOS:
+  Privacidade e Segurança › Microfone) e se outro programa (DAW, driver ASIO) não está usando a
+  entrada em modo exclusivo.
+- A linha de diagnóstico abaixo do medidor mostra o volume em dB e a frequência detectada: se o
+  sinal estiver abaixo do mínimo, aumente o ganho da interface ou a sensibilidade.
+
 **Mapa do braço** (`/mapa`) — todas as notas ou todos os intervalos a partir de uma tônica; clique para ouvir.
 
 **Mapa de intervalos** (`/mapa?ver=intervalos`) — clique numa casa para definir a tônica e veja
@@ -49,12 +77,14 @@ src/app/
     settings.service.ts  preferências globais (persistidas em localStorage)
     stats.service.ts     histórico de acertos/erros + pesos do sorteio adaptativo
     audio.service.ts     síntese de som de baixo com Web Audio API
+    pitch.ts             conversão frequência→nota e estabilizador de ataques (lógica pura)
+    microphone.service.ts captura do microfone + detecção de altura (pitchy, algoritmo McLeod)
     score.ts             placar da sessão
   shared/
     fretboard.*          braço do baixo em SVG (marcadores, cliques, faixa ativa)
     range-picker.ts      seleção de casas/cordas
     score-bar.ts         placar
-  pages/                 inicio, notas, intervalos, mapa, estatisticas
+  pages/                 inicio, notas, intervalos, microfone, mapa, estatisticas
 ```
 
 Não há back end: todo o progresso fica no `localStorage` do navegador. Um back end em .NET

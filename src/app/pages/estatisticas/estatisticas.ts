@@ -7,7 +7,7 @@ import {
   positionsInRange,
 } from '../../core/music';
 import { SettingsService } from '../../core/settings.service';
-import { STAT_KEYS, StatsService } from '../../core/stats.service';
+import { ItemStats, STAT_KEYS, StatsService } from '../../core/stats.service';
 import { FretMarker, Fretboard } from '../../shared/fretboard';
 import { StatRow, StatsTable } from './stats-table';
 
@@ -28,7 +28,10 @@ export class Estatisticas {
   protected readonly stats = inject(StatsService);
 
   private row(exercise: string, item: string, label: string, sub?: string): StatRow {
-    const s = this.stats.get(exercise, item);
+    return this.rowFrom(this.stats.get(exercise, item), label, sub);
+  }
+
+  private rowFrom(s: ItemStats, label: string, sub?: string): StatRow {
     const acc = this.stats.accuracy(s);
     return {
       label,
@@ -53,6 +56,20 @@ export class Estatisticas {
   protected readonly earRows = computed(() => {
     this.stats.data();
     return INTERVALS.map((iv) => this.row(STAT_KEYS.intervalEar, String(iv.semitones), iv.short, iv.name));
+  });
+
+  protected readonly micNoteRows = computed(() => {
+    this.stats.data();
+    return PITCH_CLASSES.map((pc) => {
+      const a = this.stats.get(STAT_KEYS.micNote, String(pc));
+      const b = this.stats.get(STAT_KEYS.micString, String(pc));
+      return this.rowFrom({ ok: a.ok + b.ok, err: a.err + b.err, timeMs: a.timeMs + b.timeMs }, this.settings.name(pc));
+    });
+  });
+
+  protected readonly micIntervalRows = computed(() => {
+    this.stats.data();
+    return INTERVALS.map((iv) => this.row(STAT_KEYS.micInterval, String(iv.semitones), iv.short, iv.name));
   });
 
   protected readonly heatMarkers = computed<FretMarker[]>(() => {

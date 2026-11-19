@@ -39,6 +39,11 @@ export class SettingsService {
     return noteName(midiOrPc, s.notation, s.accidental);
   }
 
+  /** Nome de nota forçando sustenido ou bemol. */
+  nameWith(midiOrPc: number, accidental: Accidental): string {
+    return noteName(midiOrPc, this.settings().notation, accidental);
+  }
+
   /** Nome da corda solta (ex.: "Lá", "A"). */
   stringName(stringIndex: number): string {
     return this.name(this.tuning().strings[stringIndex]);
