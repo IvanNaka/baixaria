@@ -1,4 +1,4 @@
-# Baixo Estudo
+# Baixaria
 
 Aplicação web (Angular 20) para estudo de contrabaixo.
 

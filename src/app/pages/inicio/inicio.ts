@@ -8,8 +8,8 @@ import { RouterLink } from '@angular/router';
   template: `
     <section class="page">
       <header class="page-head">
-        <h1>Estudo de contrabaixo</h1>
-        <p class="muted">Exercícios curtos e repetidos para fixar o braço do baixo na memória.</p>
+        <h1>Baixaria</h1>
+        <p class="muted">Estudo de contrabaixo: exercícios curtos e repetidos para fixar o braço do baixo na memória.</p>
       </header>
 
       <div class="cards">
