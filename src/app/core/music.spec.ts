@@ -1,5 +1,8 @@
 import {
   INTERVALS,
+  INTERVAL_COLORS,
+  intervalLabel,
+  shapeOffset,
   TUNINGS,
   findTuning,
   fullRange,
@@ -72,5 +75,29 @@ describe('music', () => {
     for (let i = 0; i < 200; i++) {
       expect(weightedPick(['a', 'b'], (x) => (x === 'a' ? 0 : 1))).toBe('b');
     }
+  });
+});
+
+describe('mapa de intervalos', () => {
+  it('rotula intervalos como grau ou distância real', () => {
+    expect(intervalLabel(0, 'real')).toBe('R');
+    expect(intervalLabel(7, 'real')).toBe('5J');
+    expect(intervalLabel(-5, 'real')).toBe('↓4J');
+    expect(intervalLabel(16, 'real')).toBe('10M');
+    expect(intervalLabel(-12, 'real')).toBe('↓8J');
+    expect(intervalLabel(-5, 'degree')).toBe('5J');
+    expect(intervalLabel(16, 'degree')).toBe('3M');
+    expect(intervalLabel(24, 'degree')).toBe('R');
+  });
+
+  it('calcula as formas em afinação por quartas', () => {
+    expect(shapeOffset(7, 1)).toBe(2); // 5J: corda de cima, 2 casas à frente
+    expect(shapeOffset(4, 1)).toBe(-1); // 3M: corda de cima, 1 casa atrás
+    expect(shapeOffset(12, 2)).toBe(2); // 8J: duas cordas acima, 2 casas à frente
+    expect(shapeOffset(10, 2)).toBe(0); // 7m: duas cordas acima, mesma casa
+  });
+
+  it('tem uma cor para cada classe de intervalo', () => {
+    expect(Object.keys(INTERVAL_COLORS).length).toBe(12);
   });
 });

@@ -162,3 +162,62 @@ export function positionStatKey(tuning: Tuning, p: FretPosition): string {
 export function fullRange(tuning: Tuning, minFret = 0, maxFret = 12): FretRange {
   return { minFret, maxFret, strings: tuning.strings.map((_, i) => i) };
 }
+
+// ---------------------------------------------------------------------------
+// Mapa de intervalos
+// ---------------------------------------------------------------------------
+
+const COMPOUND_SHORT: Record<number, string> = {
+  13: '9m',
+  14: '9M',
+  15: '10m',
+  16: '10M',
+  17: '11J',
+  18: '11A',
+  19: '12J',
+  20: '13m',
+  21: '13M',
+  22: '14m',
+  23: '14M',
+  24: '15J',
+};
+
+/**
+ * Rótulo curto de uma distância em semitons a partir da tônica.
+ * - `degree`: só a classe do intervalo (grau), ignorando oitava e direção.
+ * - `real`: distância real, com compostos (9ª, 10ª…) e "↓" para notas abaixo da tônica.
+ */
+export function intervalLabel(semitones: number, mode: 'degree' | 'real'): string {
+  if (mode === 'degree') {
+    const pc = pitchClass(semitones);
+    return pc === 0 ? 'R' : findInterval(pc).short;
+  }
+  if (semitones === 0) return 'R';
+  const abs = Math.abs(semitones);
+  const short = abs <= 12 ? findInterval(abs).short : (COMPOUND_SHORT[abs] ?? `${abs}st`);
+  return semitones < 0 ? `↓${short}` : short;
+}
+
+/** Cor de cada classe de intervalo (0 = tônica), legível com texto branco. */
+export const INTERVAL_COLORS: Record<number, string> = {
+  0: '#4f7cff',
+  1: '#2a8f99',
+  2: '#1f6f78',
+  3: '#3f9b4a',
+  4: '#237a3a',
+  5: '#a8811a',
+  6: '#c0343c',
+  7: '#d0701a',
+  8: '#9a55bf',
+  9: '#75399c',
+  10: '#5f6ad6',
+  11: '#3d47b0',
+};
+
+/**
+ * Deslocamento de casas para tocar um intervalo ascendente subindo `stringsUp` cordas,
+ * numa afinação em quartas (5 semitons entre cordas vizinhas).
+ */
+export function shapeOffset(semitones: number, stringsUp: number): number {
+  return semitones - 5 * stringsUp;
+}
