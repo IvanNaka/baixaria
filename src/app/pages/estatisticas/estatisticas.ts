@@ -3,6 +3,8 @@ import {
   INTERVALS,
   PITCH_CLASSES,
   fullRange,
+  isNatural,
+  noteName,
   positionStatKey,
   positionsInRange,
 } from '../../core/music';
@@ -43,6 +45,31 @@ export class Estatisticas {
   protected readonly noteRows = computed(() => {
     this.stats.data();
     return PITCH_CLASSES.map((pc) => this.row(STAT_KEYS.notePc, String(pc), this.settings.name(pc)));
+  });
+
+  protected readonly nameRows = computed(() => {
+    this.stats.data();
+    const keys = ['0', '1#', '1b', '2', '3#', '3b', '4', '5', '6#', '6b', '7', '8#', '8b', '9', '10#', '10b', '11'];
+    return keys
+      .map((k) => {
+        const pc = parseInt(k, 10);
+        const acc = k.endsWith('b') ? 'flat' : 'sharp';
+        const a = this.stats.get(STAT_KEYS.namesToSolfege, k);
+        const b = this.stats.get(STAT_KEYS.namesToLetters, k);
+        const ok = a.ok + b.ok;
+        const err = a.err + b.err;
+        const row: StatRow = {
+          label: `${noteName(pc, 'letters', acc)} = ${noteName(pc, 'solfege', acc)}`,
+          ok,
+          err,
+          pct: ok + err === 0 ? null : Math.round((ok / (ok + err)) * 100),
+          avgSec: ok > 0 ? (a.timeMs + b.timeMs) / ok / 1000 : null,
+        };
+        return { row, natural: isNatural(pc) };
+      })
+      // notas alteradas só aparecem depois de praticadas
+      .filter((r) => r.natural || r.row.pct !== null)
+      .map((r) => r.row);
   });
 
   protected readonly intervalRows = computed(() => {

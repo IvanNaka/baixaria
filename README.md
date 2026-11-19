@@ -9,6 +9,14 @@ Aplicação web (Angular 20) para estudo de contrabaixo.
 - *Encontre na corda* — clique na casa da nota pedida, na corda indicada.
 - *Todas as posições* — encontre todas as ocorrências de uma nota na faixa escolhida.
 
+**Cifras** (`/cifras`)
+- Associe a cifra (C D E F G A B) aos nomes Dó Ré Mi Fá Sol Lá Si: *C D E → Dó Ré Mi*,
+  *Dó Ré Mi → C D E* ou misturado.
+- Só naturais, com sustenidos, com bemóis ou ambos; as enarmônicas contam como erro com
+  explicação (C# é Dó#, não Ré♭).
+- Respostas em cifra podem ser digitadas (letra e, se precisar, `#` ou `b`).
+- Tabela de referência opcional e sorteio adaptativo.
+
 **Intervalos** (`/intervalos`)
 - *Identifique no braço* — tônica (R) e alvo (?) marcados; diga qual é o intervalo.
 - *Encontre o intervalo* — dada a tônica e o intervalo, clique onde ele está.

@@ -1,0 +1,50 @@
+.ref-table {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(92px, 1fr));
+  gap: 6px;
+}
+
+.pair {
+  display: flex;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: var(--surface-2);
+  font-weight: 600;
+
+  .solfege {
+    color: var(--accent);
+  }
+}
+
+.question {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.big-name {
+  font-size: 4.2rem;
+  font-weight: 800;
+  line-height: 1.1;
+  color: var(--accent);
+
+  &.ok {
+    color: var(--ok);
+  }
+
+  &.bad {
+    color: var(--err);
+  }
+}
+
+.answers.names {
+  grid-template-columns: repeat(auto-fill, minmax(76px, 1fr));
+}
+
+.small {
+  font-size: 0.85rem;
+  font-weight: 400;
+}

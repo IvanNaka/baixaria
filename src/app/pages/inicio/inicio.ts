@@ -17,6 +17,10 @@ import { RouterLink } from '@angular/router';
           <h2>Notas no braço</h2>
           <p>Identifique a nota de uma posição, encontre uma nota numa corda ou todas as suas ocorrências.</p>
         </a>
+        <a class="card link-card" routerLink="/cifras">
+          <h2>Cifras</h2>
+          <p>Associe C D E F G A B a Dó Ré Mi Fá Sol Lá Si, nos dois sentidos, com ou sem acidentes.</p>
+        </a>
         <a class="card link-card" routerLink="/intervalos">
           <h2>Intervalos</h2>
           <p>Reconheça as formas dos intervalos no braço, toque-os a partir de uma tônica e treine o ouvido.</p>
